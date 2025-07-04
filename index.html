@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablas Interactivas Personalizadas (Modo Oscuro)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #222; /* Fondo oscuro */
+            color: #eee; /* Texto claro */
+            transition: background-color 0.5s ease;
+        }
+        h1 {
+            color: #fff; /* Título blanco */
+        }
+        #timer-controls, #global-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            background-color: #333; /* Fondo más oscuro para controles */
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            flex-wrap: wrap; /* Permitir que los controles se envuelvan */
+            justify-content: center; /* Centrar elementos cuando se envuelven */
+        }
+        #timer-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #0f0; /* Verde brillante para el cronómetro */
+            min-width: 120px;
+            text-align: center;
+        }
+        button {
+            background-color: #007bff; /* Azul por defecto para botones */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        /* Colores específicos para los botones de control global */
+        #start-timer-btn { background-color: #28a745; } /* Verde */
+        #start-timer-btn:hover:not(:disabled) { background-color: #218838; }
+        #stop-timer-btn { background-color: #dc3545; } /* Rojo */
+        #stop-timer-btn:hover:not(:disabled) { background-color: #c82333; }
+        #reset-clicks-btn { background-color: #ffc107; color: #333; } /* Amarillo/Naranja */
+        #reset-clicks-btn:hover:not(:disabled) { background-color: #e0a800; }
+
+
+        #main-table-wrapper {
+            border: 1px solid #444; /* Borde más oscuro */
+            padding: 20px;
+            background-color: #333; /* Fondo de tabla oscuro */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            max-width: 1200px;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        #interactiveTable {
+            border-collapse: collapse;
+            width: auto;
+            margin: 0 auto;
+        }
+
+        td {
+            width: 60px;
+            height: 60px;
+            border: 1px solid #555; /* Borde de celda más oscuro */
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .spacer-col {
+            width: 30px;
+            background-color: #2a2a2a; /* Color para el espacio en modo oscuro */
+            border: none;
+            cursor: default;
+        }
+        .spacer-col button {
+            display: none;
+        }
+
+        td button {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: transparent;
+            cursor: inherit;
+            font-size: 0.9em;
+            color: #eee; /* Texto del botón claro */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            line-height: 1.2;
+        }
+        .click-data {
+            font-size: 0.7em;
+            color: #bbb; /* Color para los datos de clic */
+            margin-top: 2px;
+        }
+        /* Clases de color (ajustadas para el modo oscuro, pero manteniendo la visibilidad) */
+        .green {
+            background-color: #2c7; /* Verde más profundo */
+        }
+        .red-scale-0 { background-color: #533; }
+        .red-scale-1 { background-color: #633; }
+        .red-scale-2 { background-color: #744; }
+        .red-scale-3 { background-color: #844; }
+        .red-scale-4 { background-color: #955; }
+        .red-scale-5 { background-color: #a66; }
+        .red-scale-6 { background-color: #b66; }
+        .red-scale-7 { background-color: #c77; }
+        .red-scale-8 { background-color: #d77; }
+        .red-scale-9 { background-color: #e88; } /* Rojo más claro para el más alto */
+
+
+        /* --- Responsive design --- */
+        @media (max-width: 768px) {
+            #timer-controls, #global-controls {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            #timer-display {
+                font-size: 1.5em;
+            }
+            #main-table-wrapper {
+                padding: 10px;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            #timer-controls, #global-controls {
+                padding: 8px;
+            }
+            button {
+                font-size: 0.9em;
+                padding: 8px 15px;
+                width: 100%; /* Botones a ancho completo en móviles */
+            }
+            td {
+                width: 50px;
+                height: 50px;
+                font-size: 0.8em;
+            }
+            .click-data {
+                font-size: 0.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tabla Interactiva Personalizada</h1>
+
+    <div id="timer-controls">
+        <span id="timer-display">00:00:00</span>
+        <button id="start-timer-btn">Iniciar Cronómetro</button>
+        <button id="stop-timer-btn">Parar Cronómetro</button>
+    </div>
+
+    <div id="global-controls">
+        <button id="reset-clicks-btn">Restablecer Clics</button>
+    </div>
+
+    <div id="main-table-wrapper">
+        <table id="interactiveTable"></table>
+    </div>
+
+    <script>
+        let globalClickOrder = 0;
+        let timerInterval;
+        let startTime;
+        let timerRunning = false;
+        let elapsedTimeAtPause = 0; // Para almacenar el tiempo al pausar
+
+        // --- Funciones del Cronómetro ---
+        function startTimer() {
+            if (!timerRunning) {
+                startTime = Date.now() - elapsedTimeAtPause; // Resta el tiempo ya transcurrido
+                timerInterval = setInterval(updateTimer, 1000);
+                timerRunning = true;
+                document.getElementById('start-timer-btn').disabled = true;
+                document.getElementById('stop-timer-btn').disabled = false;
+            }
+        }
+
+        function stopTimer() {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                elapsedTimeAtPause = Date.now() - startTime; // Guarda el tiempo al pausar
+                document.getElementById('start-timer-btn').disabled = false;
+                document.getElementById('stop-timer-btn').disabled = true;
+            }
+        }
+
+        function updateTimer() {
+            const elapsedTime = Date.now() - startTime;
+            const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+            const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+            const formatTime = (unit) => String(unit).padStart(2, '0');
+
+            document.getElementById('timer-display').textContent =
+                `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+        }
+
+        // --- Función para crear la tabla única con estructura específica ---
+        function createSpecificTable() {
+            const numRows = 20; // 20 filas fijas
+            const table = document.getElementById('interactiveTable');
+            table.innerHTML = ''; // Limpiar tabla existente
+            globalClickOrder = 0; // Reiniciar el orden de clic al recrear la tabla
+
+            for (let i = 0; i < numRows; i++) {
+                const row = table.insertRow();
+
+                // Sección 1: 3 columnas
+                for (let j = 0; j < 3; j++) {
+                    addInteractiveCell(row);
+                }
+
+                // Espacio 1
+                row.insertCell().classList.add('spacer-col');
+
+                // Sección 2: 6 columnas
+                for (let j = 0; j < 6; j++) {
+                    addInteractiveCell(row);
+                }
+
+                // Espacio 2
+                row.insertCell().classList.add('spacer-col');
+
+                // Sección 3: 3 columnas
+                for (let j = 0; j < 3; j++) {
+                    addInteractiveCell(row);
+                }
+            }
+        }
+
+        // Función auxiliar para añadir una celda interactiva
+        function addInteractiveCell(row) {
+            const cell = row.insertCell();
+            cell.setAttribute('data-clicks', 0);
+            cell.setAttribute('data-order', -1);
+            const button = document.createElement('button');
+            button.innerHTML = `&nbsp;`;
+            button.onclick = function() {
+                handleCellClick(this.parentNode);
+            };
+            cell.appendChild(button);
+        }
+
+        function handleCellClick(cell) {
+            if (cell.classList.contains('spacer-col')) {
+                return;
+            }
+
+            let clicks = parseInt(cell.getAttribute('data-clicks'));
+            const oldOrder = parseInt(cell.getAttribute('data-order'));
+
+            clicks++;
+            cell.setAttribute('data-clicks', clicks);
+
+            cell.classList.forEach(className => {
+                if (className.startsWith('green') || className.startsWith('red-scale')) {
+                    cell.classList.remove(className);
+                }
+            });
+
+            const button = cell.querySelector('button');
+
+            if (clicks === 1) {
+                cell.classList.add('green');
+                globalClickOrder++;
+                cell.setAttribute('data-order', globalClickOrder);
+                button.innerHTML = `${globalClickOrder}<br><span class="click-data">Clics: ${clicks}</span>`;
+            } else {
+                const redScaleIndex = Math.min(clicks - 2, 9);
+                cell.classList.add(`red-scale-${redScaleIndex}`);
+
+                let displayOrder = oldOrder !== -1 ? oldOrder : '';
+                button.innerHTML = `${displayOrder}<br><span class="click-data">Clics: ${clicks}</span>`;
+            }
+        }
+
+        // --- Función para restablecer todos los clics ---
+        function resetAllClicks() {
+            const allCells = document.querySelectorAll('#interactiveTable td:not(.spacer-col)');
+            allCells.forEach(cell => {
+                cell.setAttribute('data-clicks', 0);
+                cell.setAttribute('data-order', -1);
+                cell.classList.forEach(className => {
+                    if (className.startsWith('green') || className.startsWith('red-scale')) {
+                        cell.classList.remove(className);
+                    }
+                });
+                const button = cell.querySelector('button');
+                if (button) { // Asegurarse de que el botón existe
+                    button.innerHTML = `&nbsp;`; // Volver a contenido vacío
+                }
+            });
+            globalClickOrder = 0; // Reiniciar el contador global de orden
+        }
+
+        // --- Inicialización ---
+        window.onload = function() {
+            document.getElementById('start-timer-btn').onclick = startTimer;
+            document.getElementById('stop-timer-btn').onclick = stopTimer;
+            document.getElementById('reset-clicks-btn').onclick = resetAllClicks;
+            createSpecificTable(); // Crea la tabla con la estructura deseada al cargar
+
+            // Deshabilitar el botón de parar al inicio, ya que el cronómetro no está corriendo
+            document.getElementById('stop-timer-btn').disabled = true;
+        };
+    </script>
+
+</body>
+</html>
