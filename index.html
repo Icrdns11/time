@@ -201,12 +201,12 @@
         let timerInterval;
         let startTime;
         let timerRunning = false;
-        let elapsedTimeAtPause = 0; // Para almacenar el tiempo al pausar
+        let elapsedTimeAtPause = 0;
 
         // --- Funciones del Cronómetro ---
         function startTimer() {
             if (!timerRunning) {
-                startTime = Date.now() - elapsedTimeAtPause; // Resta el tiempo ya transcurrido
+                startTime = Date.now() - elapsedTimeAtPause;
                 timerInterval = setInterval(updateTimer, 1000);
                 timerRunning = true;
                 document.getElementById('start-timer-btn').disabled = true;
@@ -218,7 +218,7 @@
             if (timerRunning) {
                 clearInterval(timerInterval);
                 timerRunning = false;
-                elapsedTimeAtPause = Date.now() - startTime; // Guarda el tiempo al pausar
+                elapsedTimeAtPause = Date.now() - startTime;
                 document.getElementById('start-timer-btn').disabled = false;
                 document.getElementById('stop-timer-btn').disabled = true;
             }
@@ -238,33 +238,62 @@
 
         // --- Función para crear la tabla única con estructura específica ---
         function createSpecificTable() {
-            const numRows = 20; // 20 filas fijas
+            const numRowsSide = 10; // Filas para las secciones laterales
+            const numRowsCenter = 13; // Filas para la sección central
+            const numColsSide = 3; // Columnas para las secciones laterales
+            const numColsCenter = 7; // Columnas para la sección central
+
             const table = document.getElementById('interactiveTable');
             table.innerHTML = ''; // Limpiar tabla existente
-            globalClickOrder = 0; // Reiniciar el orden de clic al recrear la tabla
+            globalClickOrder = 0; // Reiniciar el orden de clic
 
-            for (let i = 0; i < numRows; i++) {
+            // Determinar el número máximo de filas para el bucle principal
+            const maxRows = Math.max(numRowsSide, numRowsCenter);
+
+            for (let i = 0; i < maxRows; i++) {
                 const row = table.insertRow();
 
-                // Sección 1: 3 columnas
-                for (let j = 0; j < 3; j++) {
-                    addInteractiveCell(row);
+                // Sección 1: 3 columnas (solo si estamos dentro del rango de filas de los lados)
+                if (i < numRowsSide) {
+                    for (let j = 0; j < numColsSide; j++) {
+                        addInteractiveCell(row);
+                    }
+                } else {
+                    // Si ya no hay celdas en esta sección, añadir celdas vacías o con colspan
+                    // Para mantener la estructura de la tabla, agregamos celdas vacías si no hay contenido.
+                    for (let j = 0; j < numColsSide; j++) {
+                        row.insertCell().classList.add('empty-placeholder-cell'); // Celda de relleno
+                    }
                 }
 
                 // Espacio 1
                 row.insertCell().classList.add('spacer-col');
 
-                // Sección 2: 6 columnas
-                for (let j = 0; j < 6; j++) {
-                    addInteractiveCell(row);
+                // Sección 2: 7 columnas (solo si estamos dentro del rango de filas del centro)
+                if (i < numRowsCenter) {
+                    for (let j = 0; j < numColsCenter; j++) {
+                        addInteractiveCell(row);
+                    }
+                } else {
+                     // Si ya no hay celdas en esta sección, añadir celdas vacías
+                    for (let j = 0; j < numColsCenter; j++) {
+                        row.insertCell().classList.add('empty-placeholder-cell'); // Celda de relleno
+                    }
                 }
 
                 // Espacio 2
                 row.insertCell().classList.add('spacer-col');
 
-                // Sección 3: 3 columnas
-                for (let j = 0; j < 3; j++) {
-                    addInteractiveCell(row);
+                // Sección 3: 3 columnas (solo si estamos dentro del rango de filas de los lados)
+                if (i < numRowsSide) {
+                    for (let j = 0; j < numColsSide; j++) {
+                        addInteractiveCell(row);
+                    }
+                } else {
+                     // Si ya no hay celdas en esta sección, añadir celdas vacías
+                    for (let j = 0; j < numColsSide; j++) {
+                        row.insertCell().classList.add('empty-placeholder-cell'); // Celda de relleno
+                    }
                 }
             }
         }
@@ -283,8 +312,8 @@
         }
 
         function handleCellClick(cell) {
-            if (cell.classList.contains('spacer-col')) {
-                return;
+            if (cell.classList.contains('spacer-col') || cell.classList.contains('empty-placeholder-cell')) {
+                return; // Ignorar clics en celdas espaciadoras o de relleno
             }
 
             let clicks = parseInt(cell.getAttribute('data-clicks'));
@@ -317,7 +346,7 @@
 
         // --- Función para restablecer todos los clics ---
         function resetAllClicks() {
-            const allCells = document.querySelectorAll('#interactiveTable td:not(.spacer-col)');
+            const allCells = document.querySelectorAll('#interactiveTable td:not(.spacer-col):not(.empty-placeholder-cell)');
             allCells.forEach(cell => {
                 cell.setAttribute('data-clicks', 0);
                 cell.setAttribute('data-order', -1);
@@ -327,11 +356,11 @@
                     }
                 });
                 const button = cell.querySelector('button');
-                if (button) { // Asegurarse de que el botón existe
-                    button.innerHTML = `&nbsp;`; // Volver a contenido vacío
+                if (button) {
+                    button.innerHTML = `&nbsp;`;
                 }
             });
-            globalClickOrder = 0; // Reiniciar el contador global de orden
+            globalClickOrder = 0;
         }
 
         // --- Inicialización ---
@@ -339,12 +368,19 @@
             document.getElementById('start-timer-btn').onclick = startTimer;
             document.getElementById('stop-timer-btn').onclick = stopTimer;
             document.getElementById('reset-clicks-btn').onclick = resetAllClicks;
-            createSpecificTable(); // Crea la tabla con la estructura deseada al cargar
+            createSpecificTable();
 
-            // Deshabilitar el botón de parar al inicio, ya que el cronómetro no está corriendo
             document.getElementById('stop-timer-btn').disabled = true;
         };
     </script>
-
+    <style>
+        /* Estilos adicionales para celdas de relleno */
+        .empty-placeholder-cell {
+            background-color: transparent; /* O el color de fondo de la tabla */
+            border: 1px dashed #444; /* Borde más sutil para diferenciarlas */
+            cursor: default;
+            pointer-events: none; /* Asegura que no se pueda interactuar con ellas */
+        }
+    </style>
 </body>
 </html>
