@@ -3,82 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablas Interactivas Personalizadas (Modo Oscuro)</title>
+    <title>Tablas Interactivas Personalizadas (Material Design)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* ------------------------------------- */
+        /* Estilos Generales y Tema Claro (Material Design) */
+        /* ------------------------------------- */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif; /* Usamos Roboto para Material Design */
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-top: 20px;
             padding: 10px;
-            background-color: #222; /* Fondo oscuro */
-            color: #eee; /* Texto claro */
+            background-color: #f5f5f5; /* Fondo claro general (gris muy suave) */
+            color: #333; /* Texto oscuro para el fondo claro */
             transition: background-color 0.5s ease;
         }
+
         h1 {
-            color: #fff; /* Título blanco */
+            color: #424242; /* Título gris oscuro */
+            font-weight: 500; /* Peso de fuente típico de Material Design */
+            margin-bottom: 30px;
         }
+
+        /* ------------------------------------- */
+        /* Controles y Botones (Material Design) */
+        /* ------------------------------------- */
         #timer-controls, #global-controls {
             display: flex;
             align-items: center;
             gap: 15px;
             margin-bottom: 30px;
-            background-color: #333; /* Fondo más oscuro para controles */
+            background-color: #ffffff; /* Fondo blanco para las "tarjetas" de controles */
             padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            flex-wrap: wrap; /* Permitir que los controles se envuelvan */
-            justify-content: center; /* Centrar elementos cuando se envuelven */
+            border-radius: 8px; /* Bordes redondeados para las tarjetas de control */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra para elevación */
+            flex-wrap: wrap;
+            justify-content: center;
         }
+
         #timer-display {
             font-size: 2em;
-            font-weight: bold;
-            color: #0f0; /* Verde brillante para el cronómetro */
+            font-weight: 500; /* Peso de fuente Material Design */
+            color: #4CAF50; /* Verde material para el cronómetro */
             min-width: 120px;
             text-align: center;
         }
+
         #total-clicks-display {
             font-size: 1.2em;
-            color: #fff;
-            background-color: #555;
+            color: #616161; /* Gris oscuro para el texto */
+            background-color: #eeeeee; /* Fondo gris claro */
             padding: 5px 10px;
             border-radius: 5px;
             margin-left: 10px;
         }
+
         button {
-            background-color: #007bff; /* Azul por defecto para botones */
+            background-color: #1976D2; /* Azul primario de Material Design */
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 4px; /* Ligeramente redondeado para botones */
             cursor: pointer;
             font-size: 1em;
-            transition: background-color 0.3s ease;
+            font-weight: 500; /* Peso de fuente de botón Material Design */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.2); /* Sombra inicial del botón */
         }
+
         button:hover:not(:disabled) {
-            background-color: #0056b3;
+            background-color: #1565C0; /* Azul más oscuro al pasar el ratón */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Sombra más grande al pasar el ratón */
         }
+
+        button:active:not(:disabled) {
+            background-color: #0D47A1; /* Azul aún más oscuro al hacer clic */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3); /* Sombra más pequeña al hacer clic */
+        }
+
         button:disabled {
-            background-color: #555;
+            background-color: #BDBDBD; /* Gris claro para botones deshabilitados */
+            color: #757575; /* Texto gris oscuro */
             cursor: not-allowed;
+            box-shadow: none; /* Sin sombra cuando deshabilitado */
         }
 
-        /* Colores específicos para los botones de control global */
-        #start-timer-btn { background-color: #28a745; } /* Verde */
-        #start-timer-btn:hover:not(:disabled) { background-color: #218838; }
-        #stop-timer-btn { background-color: #dc3545; } /* Rojo */
-        #stop-timer-btn:hover:not(:disabled) { background-color: #c82333; }
-        #reset-clicks-btn { background-color: #ffc107; color: #333; } /* Amarillo/Naranja */
-        #reset-clicks-btn:hover:not(:disabled) { background-color: #e0a800; }
+        /* Colores específicos para los botones de control global (ajustados a Material Design) */
+        #start-timer-btn { background-color: #4CAF50; } /* Verde Material */
+        #start-timer-btn:hover:not(:disabled) { background-color: #388E3C; }
+        #start-timer-btn:active:not(:disabled) { background-color: #2E7D32; }
+
+        #stop-timer-btn { background-color: #F44336; } /* Rojo Material */
+        #stop-timer-btn:hover:not(:disabled) { background-color: #D32F2F; }
+        #stop-timer-btn:active:not(:disabled) { background-color: #C62828; }
+
+        #reset-clicks-btn { background-color: #FFC107; color: #333; } /* Naranja/Amarillo Material */
+        #reset-clicks-btn:hover:not(:disabled) { background-color: #FFA000; }
+        #reset-clicks-btn:active:not(:disabled) { background-color: #FF8F00; }
 
 
+        /* ------------------------------------- */
+        /* Estilos de Tabla y Celdas (Material Design) */
+        /* ------------------------------------- */
         #main-table-wrapper {
-            border: 1px solid #444; /* Borde más oscuro */
+            border: none; /* Eliminamos el borde exterior, la sombra lo reemplaza */
             padding: 20px;
-            background-color: #333; /* Fondo de tabla oscuro */
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            background-color: #ffffff; /* Fondo blanco para la tabla */
+            border-radius: 8px; /* Bordes redondeados para el contenedor de la tabla */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Sombra más pronunciada para la tabla */
             margin-bottom: 20px;
             max-width: 1200px;
             width: 100%;
@@ -86,7 +120,8 @@
         }
 
         #interactiveTable {
-            border-collapse: collapse;
+            border-collapse: separate; /* Importante para que border-radius funcione en celdas individuales */
+            border-spacing: 8px; /* Espacio entre celdas para el efecto de "tarjetas" */
             width: auto;
             margin: 0 auto;
         }
@@ -94,26 +129,33 @@
         td {
             width: 60px;
             height: 60px;
-            border: 1px solid #555; /* Borde de celda más oscuro */
+            border: 1px solid #e0e0e0; /* Borde suave para las celdas */
             text-align: center;
             vertical-align: middle;
-            /* cursor: pointer; */ /* Cursor se define por celda activa */
-            transition: background-color 0.3s ease;
+            background-color: #ffffff; /* Fondo blanco por defecto para las celdas */
+            border-radius: 8px; /* ¡Bordes redondeados para cada celda! */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra sutil para cada celda */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
             box-sizing: border-box;
             position: relative;
         }
 
-        /* Estilos para celdas de espacio y relleno */
-        .spacer-col, .non-interactive-cell { /* .non-interactive-row td ahora es .non-interactive-cell */
-            width: 30px; /* Esto no afecta al <td> si tiene width */
-            background-color: #2a2a2a; /* Color para el espacio en modo oscuro */
-            border: none; /* Eliminar el borde si es un espaciador puro */
+        /* Estilos para celdas de espacio y relleno (Material Design) */
+        .spacer-col, .non-interactive-cell {
+            width: 30px; /* Ancho para la columna espaciadora */
+            background-color: transparent; /* Transparente, se ve el fondo del wrapper o del body */
+            border: none; /* Sin borde */
             cursor: default;
-            pointer-events: none; /* Asegura que no se pueda interactuar con ellas */
+            pointer-events: none;
+            box-shadow: none; /* Sin sombra */
+            border-radius: 0; /* Sin bordes redondeados */
         }
         .non-interactive-cell { /* Nueva clase para celdas inactivas en filas no activas */
-            width: 60px; /* Mantener el ancho de celda normal */
-            border: 1px dashed #444; /* Borde sutil para rellenar */
+            width: 60px; /* Mantener el ancho de celda normal para rellenar */
+            background-color: #f0f0f0; /* Un gris muy claro para las celdas no interactivas */
+            border: 1px dashed #d0d0d0; /* Borde punteado sutil */
+            box-shadow: none;
+            border-radius: 8px; /* Mantener bordes redondeados para la forma general */
         }
 
         .spacer-col button, .non-interactive-cell button {
@@ -125,9 +167,9 @@
             height: 100%;
             border: none;
             background-color: transparent;
-            cursor: pointer; /* Solo botones de celdas interactivas tienen cursor pointer */
+            cursor: pointer;
             font-size: 0.9em;
-            color: #eee; /* Texto del botón claro */
+            color: #424242; /* Texto del botón oscuro */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -135,33 +177,48 @@
             padding: 0;
             line-height: 1.2;
         }
-        td.inactive-cell button { /* Para botones dentro de celdas inactivas */
+        td.inactive-cell button {
             cursor: default;
             pointer-events: none;
         }
 
         .click-data {
             font-size: 0.7em;
-            color: #bbb; /* Color para los datos de clic */
+            color: #757575; /* Color gris para los datos de clic */
             margin-top: 2px;
         }
-        /* Clases de color (ajustadas para el modo oscuro, pero manteniendo la visibilidad) */
+
+        /* Clases de color (ajustadas para el modo CLARO, manteniendo contraste) */
+        /* Se busca que los colores sean de la paleta de Material Design y visibles sobre fondos claros */
         .green {
-            background-color: #2c7; /* Verde más profundo */
+            background-color: #81C784; /* Verde claro de Material Design */
+            box-shadow: 0 3px 6px rgba(0, 150, 136, 0.3); /* Sombra con un toque verde/azul */
         }
-        .red-scale-0 { background-color: #533; }
-        .red-scale-1 { background-color: #633; }
-        .red-scale-2 { background-color: #744; }
-        .red-scale-3 { background-color: #844; }
-        .red-scale-4 { background-color: #955; }
-        .red-scale-5 { background-color: #a66; }
-        .red-scale-6 { background-color: #b66; }
-        .red-scale-7 { background-color: #c77; }
-        .red-scale-8 { background-color: #d77; }
-        .red-scale-9 { background-color: #e88; } /* Rojo más claro para el más alto */
+        .green:hover {
+            background-color: #66BB6A; /* Verde un poco más oscuro al pasar el ratón */
+            transform: translateY(-2px); /* Ligeramente levantado */
+        }
+
+        /* Escala de rojos ajustada para fondos claros y visibilidad */
+        .red-scale-0 { background-color: #FFEBEE; color: #5C6BC0; } /* Muy claro, texto azul */
+        .red-scale-1 { background-color: #FFCDD2; color: #424242; }
+        .red-scale-2 { background-color: #EF9A9A; color: #424242; }
+        .red-scale-3 { background-color: #E57373; color: white; }
+        .red-scale-4 { background-color: #EF5350; color: white; }
+        .red-scale-5 { background-color: #F44336; color: white; }
+        .red-scale-6 { background-color: #E53935; color: white; }
+        .red-scale-7 { background-color: #D32F2F; color: white; }
+        .red-scale-8 { background-color: #C62828; color: white; }
+        .red-scale-9 { background-color: #B71C1C; color: white; } /* Rojo más oscuro para el más alto */
+
+        /* Añade una sombra al pasar el ratón por cualquier celda interactiva */
+        td:hover:not(.spacer-col):not(.non-interactive-cell) {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra más grande al pasar el ratón */
+            transform: translateY(-2px); /* Ligeramente levantado */
+        }
 
 
-        /* --- Responsive design --- */
+        /* --- Responsive design (ajustado para el nuevo tema) --- */
         @media (max-width: 768px) {
             #timer-controls, #global-controls {
                 flex-direction: column;
