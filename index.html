@@ -103,6 +103,11 @@
         #reset-clicks-btn:hover:not(:disabled) { background-color: #FFA000; }
         #reset-clicks-btn:active:not(:disabled) { background-color: #FF8F00; }
 
+        /* Estilo para el nuevo botón de restablecer cronómetro */
+        #reset-timer-btn { background-color: #9E9E9E; } /* Gris Material */
+        #reset-timer-btn:hover:not(:disabled) { background-color: #757575; }
+        #reset-timer-btn:active:not(:disabled) { background-color: #616161; }
+
 
         /* ------------------------------------- */
         /* Estilos de Tabla y Celdas (Material Design) */
@@ -264,7 +269,7 @@
         <span id="total-clicks-display">Total Clicks: 0</span>
         <button id="start-timer-btn">Iniciar Cronómetro</button>
         <button id="stop-timer-btn">Parar Cronómetro</button>
-    </div>
+        <button id="reset-timer-btn">Restablecer Cronómetro</button> </div>
 
     <div id="global-controls">
         <button id="reset-clicks-btn">Restablecer Clics</button>
@@ -290,6 +295,7 @@
                 timerRunning = true;
                 document.getElementById('start-timer-btn').disabled = true;
                 document.getElementById('stop-timer-btn').disabled = false;
+                document.getElementById('reset-timer-btn').disabled = false; // Habilitar restablecer al iniciar
             }
         }
 
@@ -300,6 +306,7 @@
                 elapsedTimeAtPause = Date.now() - startTime;
                 document.getElementById('start-timer-btn').disabled = false;
                 document.getElementById('stop-timer-btn').disabled = true;
+                document.getElementById('reset-timer-btn').disabled = false; // Mantener habilitado para restablecer
             }
         }
 
@@ -313,6 +320,16 @@
 
             document.getElementById('timer-display').textContent =
                 `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+        }
+
+        // --- Nueva función para restablecer el cronómetro ---
+        function resetTimer() {
+            stopTimer(); // Primero para el cronómetro si está corriendo
+            elapsedTimeAtPause = 0; // Restablece el tiempo transcurrido
+            document.getElementById('timer-display').textContent = '00:00:00'; // Pone el display a cero
+            document.getElementById('start-timer-btn').disabled = false; // Habilita el botón de inicio
+            document.getElementById('stop-timer-btn').disabled = true; // Deshabilita el de parar
+            document.getElementById('reset-timer-btn').disabled = true; // Deshabilita restablecer hasta que se inicie de nuevo
         }
 
         // --- Función para actualizar el contador de clics totales ---
@@ -531,10 +548,12 @@
         window.onload = function() {
             document.getElementById('start-timer-btn').onclick = startTimer;
             document.getElementById('stop-timer-btn').onclick = stopTimer;
+            document.getElementById('reset-timer-btn').onclick = resetTimer; // Asigna la función al nuevo botón
             document.getElementById('reset-clicks-btn').onclick = resetAllClicks;
             createSpecificTable();
 
             document.getElementById('stop-timer-btn').disabled = true;
+            document.getElementById('reset-timer-btn').disabled = true; // El botón de restablecer cronómetro inicia deshabilitado
         };
     </script>
 </body>
